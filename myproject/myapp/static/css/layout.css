@@ -1,0 +1,29 @@
+#sidebar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 200px; 
+	height: 100%;
+	background: var(--light);
+	z-index: 2000;
+	transition: width .3s ease; 
+	overflow-x: hidden;
+	scrollbar-width: none;
+}
+#sidebar::--webkit-scrollbar {
+	display: none;
+}
+#sidebar.hide {
+	width: 60px;
+}
+
+#content {
+	position: relative;
+	width: calc(100% - 200px); 
+	left: 200px;              
+	transition: .3s ease;
+}
+#sidebar.hide ~ #content {
+	width: calc(100% - 60px);
+	left: 60px;
+}

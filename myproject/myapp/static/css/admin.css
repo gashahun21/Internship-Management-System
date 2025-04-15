@@ -1,0 +1,80 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.content-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    margin-left: 250px; /* Matches sidebar width */
+    padding: 20px;
+}
+
+.main-header {
+    position: fixed;
+    width: 100%;
+    z-index: 1030;
+}
+
+/* Sidebar Styles */
+.main-sidebar {
+    height: 100vh;
+    position: fixed;
+    overflow-y: auto;
+    top: 0;
+    left: 0;
+    width: 250px;
+    background-color: #343a40; /* Dark blue background */
+    color: #ffffff; /* White text */
+}
+
+/* Sidebar Navigation Links */
+.nav-sidebar .nav-link {
+    color: #ffffff; /* White link text */
+}
+
+.nav-sidebar .nav-link.active {
+    background-color: #007bff; /* Blue active background */
+    color: #ffffff; /* White active text */
+}
+
+.nav-sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Light hover background */
+}
+
+/* Sidebar Brand Link */
+.brand-link {
+    background-color: #343a40; /* Matches sidebar background */
+    color: #ffffff; /* White brand text */
+}
+
+.brand-link:hover {
+    background-color: #343a40; /* Keeps same background on hover */
+    color: #ffffff; /* White brand text on hover */
+}
+
+/* Footer Styles */
+.main-footer {
+    position: fixed;
+    bottom: 0;
+    width: calc(100% - 250px); /* Adjust width for sidebar */
+    left: 250px;
+    background: #f8f9fa;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Profile Image Styles */
+.profile-user-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+}

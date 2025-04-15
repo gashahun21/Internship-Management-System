@@ -1,0 +1,17 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+
+@import url('variables.css');
+
+@import url('base.css');
+
+@import url('layout.css');
+
+@import url('sidebar.css');
+@import url('navbar.css');
+@import url('main-content.css');
+@import url('components.css'); 
+
+@import url('responsive.css');
+

@@ -1,28 +1,364 @@
-<!-- templates/admin/department_head_create.html -->
-{% extends "admin/base.html" %}
+
+{% extends "admin/admin_base.html" %}
+{% load static %}
+
+{% block title %}Assign Department Head{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Add Department Head</h1>
-    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Assign Department Head</h6>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary">Assign</button>
-                        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
-                    </form>
-                </div>
-            </div>
+<style>
+    .content-wrapper {
+        padding-top: var(--header-height);
+        padding-bottom: var(--footer-height);
+        margin-left: var(--sidebar-width);
+        background-color: var(--secondary-bg);
+        flex: 1;
+        transition: margin-left var(--transition-speed) ease;
+        overflow-y: auto;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    .content {
+        background-color: transparent;
+        gap: 1.25rem;
+        transition: box-shadow 0.2s ease;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    .card {
+        background-color: white;
+        padding: 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .card-primary {
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    .card-header {
+        background-color: #007bff;
+        color: white;
+        border-radius: 8px 8px 0 0;
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(0,0,0,.125);
+    }
+    .card-title {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+    .card-body {
+        padding: 40px;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        font-family: 'Courier New', Courier, monospace;
+        counter-reset: blue;
+    }
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        box-sizing: border-box;
+    }
+    .form-control:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+    }
+    .two-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        border-top: 1px solid rgba(0,0,0,.125);
+        border-radius: 0 0 8px 8px;
+    }
+    .btn-primary {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+        cursor: pointer;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    .btn-secondary {
+        color: #fff;
+        background-color: #6c757d;
+        border-color: #6c757d;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: .25rem;
+        display: none;
+    }
+    .errorlist {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        color: #dc3545;
+        font-size: 0.875em;
+    }
+    .errorlist li {
+        margin-top: .25rem;
+    }
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        padding-right: calc(1.5em + .75rem);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23dc3545' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right calc(.375em + .1875rem) center;
+        background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+    }
+    .form-control.is-invalid:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 .2rem rgba(220,53,69,.25);
+    }
+    .form-control.is-invalid + .error-message,
+    .form-control.is-invalid ~ .errorlist {
+        display: block;
+    }
+    .form-buttons .btn {
+        margin-right: 10px;
+    }
+    .form-buttons .btn:last-child {
+        margin-right: 0;
+    }
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 15px;
+        }
+        .two-btn {
+            flex-direction: column;
+            gap: 10px;
+        }
+        .two-btn .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<section class="content">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Assign Department Head</h3>
         </div>
-    </div>
-</div>
+        <form method="post" id="departmentHeadForm" novalidate>
+            {% csrf_token %}
+            <div class="card-body">
+                {# Non-Field Errors #}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {# Loop through visible fields #}
+                {% for field in form.visible_fields %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+
+                        {{ field }}
+
+                        {# Field-Specific Errors #}
+                        {% if field.errors %}
+                            <div class="errorlist">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {# JavaScript Error Placeholder #}
+                        <div class="error-message" id="{{ field.auto_id }}_js_error"></div>
+
+                        {# Help Text #}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {# Hidden Fields #}
+                {% for field in form.hidden_fields %}
+                    {{ field }}
+                {% endfor %}
+            </div><!-- /.card-body -->
+
+            <div class="two-btn">
+                <button type="submit" class="btn btn-primary">Assign</button>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary" id="cancelButton">Cancel</a>
+            </div>
+        </form>
+    </div><!-- /.card -->
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('departmentHeadForm');
+    const cancelButton = document.getElementById('cancelButton');
+
+    const fieldsToValidate = [
+        { 
+            id: 'id_username', 
+            errorIdKey: 'username_error', 
+            validate: value => value && value.trim().length > 0 
+        },
+        { 
+            id: 'id_email', 
+            errorIdKey: 'email_error', 
+            validate: value => value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) 
+        },
+        { 
+            id: 'id_password', 
+            errorIdKey: 'password_error', 
+            validate: value => {
+                if (!value) return false;
+                return value.length >= 8 && !/^\d+$/.test(value);
+            }
+        },
+        { 
+            id: 'id_department', 
+            errorIdKey: 'department_error', 
+            validate: value => value && value.trim().length > 0 
+        }
+    ];
+
+    function getErrorMessage(errorIdKey) {
+        const messages = {
+            'username_error': 'Please enter a valid username.',
+            'email_error': 'Please enter a valid email address.',
+            'password_error': 'Password must be at least 8 characters and not entirely numeric.',
+            'department_error': 'Please select a department.'
+        };
+        return messages[errorIdKey] || 'Invalid input.';
+    }
+
+    function validateField(fieldConfig) {
+        const input = document.getElementById(fieldConfig.id);
+        if (!input) return true;
+
+        const jsErrorElement = document.getElementById(fieldConfig.id + '_js_error');
+        const djangoErrorList = input.closest('.form-group').querySelector('.errorlist');
+        const value = input.type === 'file' ? (input.files.length > 0 ? input.files[0] : null) : input.value;
+        let isFieldValid = true;
+
+        input.classList.remove('is-invalid');
+        if (jsErrorElement) {
+            jsErrorElement.textContent = '';
+            jsErrorElement.style.display = 'none';
+        }
+
+        const hasDjangoError = djangoErrorList && djangoErrorList.children.length > 0;
+
+        if (hasDjangoError) {
+            input.classList.add('is-invalid');
+            isFieldValid = false;
+        } else {
+            if (!fieldConfig.validate(value)) {
+                input.classList.add('is-invalid');
+                if (jsErrorElement) {
+                    jsErrorElement.textContent = getErrorMessage(fieldConfig.errorIdKey);
+                    jsErrorElement.style.display = 'block';
+                }
+                isFieldValid = false;
+            }
+        }
+        return isFieldValid;
+    }
+
+    form.addEventListener('submit', function (event) {
+        let isFormValid = true;
+        fieldsToValidate.forEach(fieldConfig => {
+            if (!validateField(fieldConfig)) {
+                isFormValid = false;
+            }
+        });
+
+        if (!isFormValid) {
+            event.preventDefault();
+            const firstInvalid = form.querySelector('.is-invalid');
+            if (firstInvalid) {
+                firstInvalid.focus();
+            }
+        }
+    });
+
+    fieldsToValidate.forEach(fieldConfig => {
+        const input = document.getElementById(fieldConfig.id);
+        if (input) {
+            const eventType = (input.type === 'checkbox' || input.type === 'radio' || input.tagName === 'SELECT') ? 'change' : 'input';
+            input.addEventListener(eventType, () => validateField(fieldConfig));
+        }
+    });
+
+    cancelButton.addEventListener('click', function (event) {
+        let changed = false;
+        form.querySelectorAll('input, select, textarea').forEach(el => {
+            if (el.type === 'checkbox' || el.type === 'radio') {
+                if (el.checked !== el.defaultChecked) changed = true;
+            } else if (el.type === 'file') {
+                if (el.files.length > 0) changed = true;
+            } else {
+                if (el.value !== el.defaultValue) changed = true;
+            }
+        });
+
+        if (changed) {
+            if (!confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+                event.preventDefault();
+            }
+        } else {
+            window.location.href = cancelButton.href;
+            event.preventDefault();
+        }
+    });
+
+    form.querySelectorAll('.errorlist').forEach(errorList => {
+        if (errorList.children.length > 0) {
+            const input = errorList.closest('.form-group').querySelector('input, select, textarea');
+            if (input) {
+                input.classList.add('is-invalid');
+            }
+        }
+    });
+});
+</script>
+
 {% endblock %}

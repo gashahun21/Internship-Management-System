@@ -1,68 +1,103 @@
-{% extends 'departement_head/base.html' %}
+{% extends base_template %}
 {% load static %}
-{% block title %}Profile - {{ user.get_full_name }}{% endblock %}
+
+{% block title %}Profile - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="content-wrapper">
-    <section class="content-header">
+<div class="page-content-area profile-page">
+    <section class="profile-page__header">
         <div class="container-fluid">
-            <div class="row mb-2">
+            <div class="row mb-2 align-items-center">
                 <div class="col-sm-6">
-                    <h1>Profile</h1>
+                    <h1 class="profile-page__title">Profile</h1>
                 </div>
-                <div class="col-sm-6">
-                    <a href="{% url 'edit_profile' %}" class="btn btn-primary float-right">
-                        <i class="fas fa-edit"></i> Edit Profile
+                <div class="col-sm-6 text-sm-right">
+                    <a href="{% url 'edit_profile' %}" class="profile-page__edit-button btn">
+                        <i class="fas fa-pencil-alt"></i> Edit Profile
                     </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="content">
+    <section class="profile-page__content">
         <div class="container-fluid">
-            <div class="row">
-                <!-- Left Column: Profile Image and Basic Info -->
-                <div class="col-md-4">
-                    <div class="card card-primary">
-                        <div class="card-body box-profile">
-                            <div class="text-center">
-                                <img class="profile-user-img img-fluid img-circle"
-                                     src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'default-profile.png' %} {% endif %}"
-                                     alt="Profile Picture">
-                            </div>
-                            
-                            <h3 class="profile-username text-center">{{ user.get_full_name }}</h3>
-                            <p class="text-muted text-center">{{ user.role }}</p>
+            <div class="profile-page__row-container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-5">
+                        <div class="profile-card profile-card--main">
+                            <div class="profile-card__body">
+                                <div class="profile-card__avatar-wrapper">
+                                    <div class="avatar-container avatar-container--large">
+                                        {% if user.profile_image and user.profile_image.url %}
+                                            <img class="avatar-image"
+                                                 src="{{ user.profile_image.url }}"
+                                                 alt="{{ user.get_full_name|default:user.username }}'s Profile Picture">
+                                        {% else %}
+                                            <div class="avatar-initials"
+                                                 title="{{ user.get_full_name|default:user.username }}"
+                                                 data-name="{{ user.get_full_name|default:user.username }}">
+                                                <span>{{ user.get_full_name|default:user.username|first|upper }}</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
 
-                            <ul class="list-group list-group-unbordered mb-3">
-                                <li class="list-group-item">
-                                    <b>Email</b>
-                                    <a class="float-right">{{ user.email }}</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <b>Phone</b>
-                                    <a class="float-right">{{ user.phone }}</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <b>Department</b>
-                                    <a class="float-right">{{ user.departmenthead.department.name }}</a>
-                                </li>
-                            </ul>
+                                <h3 class="profile-card__username">{{ user.get_full_name|default:user.username }}</h3>
+                                <p class="profile-card__role text-muted">
+                                    {% if user.is_superuser %}System Admin
+                                    {% elif user.is_department_head %}Department Head
+                                    {% elif user.is_student %}Student
+                                    {% elif user.is_company_admin %}Company Admin
+                                    {% elif user.is_advisor %}Advisor
+                                    {% elif user.is_supervisor %}Supervisor
+                                    {% else %}User{% endif %}
+                                </p>
+
+                                <hr class="profile-card__separator">
+
+                                <ul class="profile-card__details-list">
+                                    <li>
+                                        <span class="icon"><i class="fas fa-envelope"></i></span>
+                                        <span class="label">Email</span>
+                                        <span class="value">{{ user.email }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="icon"><i class="fas fa-phone"></i></span>
+                                        <span class="label">Phone</span>
+                                        <span class="value">{{ user.phone|default:'N/A' }}</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Right Column: Additional Details -->
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">About Me</h3>
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Bio:</strong> {{ user.userprofile.bio|default:"No bio provided." }}</p>
-                            <p><strong>Address:</strong> {{ user.userprofile.address|default:"No address provided." }}</p>
-                            <p><strong>Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+                    <div class="col-lg-8 col-md-7">
+                        <div class="profile-card profile-card--about">
+                            <div class="profile-card__header">
+                                <h3 class="profile-card__title"><i class="fas fa-info-circle"></i>About Me</h3>
+                            </div>
+                            <div class="profile-card__body">
+                                <div class="profile-card__about-section">
+                                    <h4>Bio</h4>
+                                    <p class="text-muted">{{ user.bio|default:"No bio provided."|linebreaksbr }}</p>
+                                </div>
+                                <hr class="profile-card__separator">
+                                <div class="profile-card__about-section">
+                                    <h4>Contact Information</h4>
+                                    <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> {{ user.address|default:"No address provided." }}</p>
+                                </div>
+                                <hr class="profile-card__separator">
+                                <div class="profile-card__about-section">
+                                    <h4>Account</h4>
+                                    <p><strong><i class="fas fa-calendar-alt"></i> Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -70,4 +105,8 @@
         </div>
     </section>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}

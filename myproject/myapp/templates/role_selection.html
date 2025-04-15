@@ -1,18 +1,27 @@
-<!-- templates/role_selection.html -->
-{% extends "admin/base.html" %}
+{% extends "admin/admin_base.html" %} 
+{% load static %} 
+
+{% block title %}Select User Role{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/role_selection.css' %}"> 
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="card shadow mb-4">
+    <h1 class="h3 mb-4 text-gray-800">Create New User</h1> 
+
+    <div class="card shadow mb-4"> 
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Select User Role</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Step 1: Select User Role</h6>
         </div>
         <div class="card-body">
-            <form id="roleForm" method="post">
+            <form id="roleForm" method="post"> 
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="role">Select Role</label>
-                    <select name="role" id="role" class="form-control">
+                    <label for="role">Select Role:</label>
+                    <select name="role" id="role" class="form-control" required>
+                        <option value="" disabled selected>-- Select a Role --</option>
                         <option value="department_head">Department Head</option>
                         <option value="advisor">Advisor</option>
                         <option value="student">Student</option>
@@ -20,31 +29,50 @@
                         <option value="company_admin">Company Admin</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Next</button>
-                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                <div class="mt-4 text-center mb-4">
+                    <button type="button" id="nextButton" class="btn btn-primary">Next</button> 
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a> 
+                </div>
             </form>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %} 
 <script>
-    document.getElementById('roleForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the default form submission
+    document.addEventListener('DOMContentLoaded', function() { 
+        const roleSelect = document.getElementById('role');
+        const nextButton = document.getElementById('nextButton');
 
-        // Get the selected role
-        var role = document.getElementById('role').value;
-
-        // Define the URLs for each role
-        var urlMapping = {
+        const urlMapping = {
             'department_head': "{% url 'department_head_create' %}",
             'advisor': "{% url 'add_advisor' %}",
-            'student': "{% url 'student_register' %}",
+            'student': "{% url 'add_student' %}",
             'supervisor': "{% url 'supervisor_register' %}",
             'company_admin': "{% url 'company_admin_create' %}"
         };
 
-        // Redirect to the appropriate URL based on the selected role
-        window.location.href = urlMapping[role];
+        nextButton.addEventListener('click', function(event) {
+            const selectedRole = roleSelect.value;
+
+            if (selectedRole && urlMapping[selectedRole]) {
+                 window.location.href = urlMapping[selectedRole];
+            } else if (selectedRole === "") {
+                 alert("Please select a role before proceeding."); 
+                 roleSelect.focus();
+            } else {
+                console.error("Configuration error: No URL mapped for role:", selectedRole);
+                alert("An unexpected error occurred. Please contact support."); 
+            }
+        });
+
+        roleSelect.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                nextButton.click();
+            }
+        });
     });
 </script>
 {% endblock %}

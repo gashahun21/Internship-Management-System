@@ -24,11 +24,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'myapp',
-    'channels',
+    'django.contrib.humanize', # <--- ADD THIS LINE
+    'crispy_forms',
     'widget_tweaks',
+    'myapp',
+    # ... other apps
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -44,11 +48,10 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'myproject.urls'
 AUTH_USER_MODEL = 'myapp.User'  # Replace 'myapp' with your app name
 LOGIN_URL = '/login/'
-# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'myapp', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Ensure this line exists
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -68,17 +71,17 @@ CACHES = {
     }
 }
 
-# Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fa',
-        'USER': 'root',
-        'PASSWORD': 'GO19667543',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.mysql',       # Specifies you're using MySQL as the backend.
+        'NAME': 'fyp_database',                     # The name of your database.
+        'USER': 'root',                             # MySQL username.
+        'PASSWORD': '@211619demise',                # MySQL password.
+        'HOST': 'localhost',                        # The database server (localhost = your machine).
+        'PORT': '3306',                             # Default port for MySQL.
     }
 }
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',

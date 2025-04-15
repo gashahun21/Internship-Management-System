@@ -1,0 +1,352 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif; 
+}
+
+.main {
+    width: 100%;
+    /*background: linear-gradient(to top, rgba(0,0,0,0.5)50%,rgba(0,0,0,0.5)50%), url("{% static 'image/bg1' %}");   */
+     background-position: center;
+    background-size: cover;
+    min-height: 100vh;
+    overflow-x: hidden; 
+    background-image: url("{% static 'image/bg1' %}");
+}
+
+/* --- Navbar --- */
+.navbar {
+    width: 90%;
+    max-width: 1200px;
+    height: 75px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.icon {
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    color: #ff7200;
+    font-size: 35px;
+    font-family: Arial;
+    margin-top: 5rem;
+    border-radius: 6rem;
+}
+
+.menu {
+    height: 70px;
+}
+
+ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul li {
+    margin: 0 15px;
+    font-size: 14px;
+}
+
+ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-family: Arial;
+    font-weight: bold;
+    transition: 0.4s ease-in-out;
+}
+
+ul li a:hover {
+    color: #ff7200;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+}
+
+.srch {
+    font-family: 'Times New Roman';
+    height: 40px;
+    background: transparent;
+    border: 1px solid #ff7200;
+    color: #fff;
+    border-right: none;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px 0 0 5px;
+    margin-right: -1px; /* Overlap border */
+}
+
+.search .btn { /* Target search button specifically */
+    width: auto;
+    padding: 0 15px;
+    height: 40px;
+    background: #ff7200;
+    border: 1px solid #ff7200;
+    color: #fff;
+    font-size: 15px;
+    border-radius: 0 5px 5px 0;
+    transition: 0.2s ease;
+    cursor: pointer;
+    display: inline-block; /* Or remove <a> wrapper in HTML */
+}
+
+.search .btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+.srch:focus,
+.search .btn:focus {
+    outline: none;
+}
+
+
+/* --- Content Area --- */
+.content {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+    color: #1f1e1e;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    flex-wrap: wrap; /* Allow form to wrap below on small screens */
+}
+
+.content-text {
+    flex: 1; /* Allow text area to grow */
+    min-width: 300px; /* Prevent text area getting too small */
+    padding-right: 20px;
+}
+
+.content-text .par {
+    padding-bottom: 25px;
+    font-family: Arial;
+    letter-spacing: 1.2px;
+    line-height: 30px;
+}
+
+.content-text h1 {
+    font-family: 'Times New Roman';
+    font-size: 50px;
+    margin-top: 0;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.content-text .cn {
+    width: 160px;
+    height: 40px;
+    background: #ff7200;
+    border: none;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .4s ease;
+    display: inline-block; 
+    text-align: center; /* Center link text */
+    line-height: 40px; 
+}
+
+.content-text .cn a {
+    text-decoration: none;
+    color: #000;
+    transition: .3s ease;
+    display: block; /* Make link fill button */
+}
+
+.content-text .cn:hover {
+    background-color: #fff;
+}
+
+.content-text span {
+    color: #ff7200;
+    font-size: 60px; /* Slightly smaller for responsiveness */
+}
+
+/* --- Login Form --- */
+.form {
+    width: 100%; /* Take full width on small screens */
+    max-width: 300px; /* Max width for form */
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 50%,rgba(0,0,0,0.8) 50%);
+    border-radius: 10px;
+    padding: 25px;
+    flex-shrink: 0;
+    margin: 0 auto; /* Center form if it wraps */
+}
+
+.form h2 {
+    width: auto; /* Adjust width automatically */
+    max-width: 220px; /* Keep max width */
+    margin: 2px auto 20px auto; /* Center heading */
+    font-family: sans-serif;
+    text-align: center;
+    color: #ff7200;
+    font-size: 22px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.form input {
+    width: 100%; /* Use full width of form container */
+    height: 35px;
+    background: transparent;
+    border: none; /* Remove side borders */
+    border-bottom: 1px solid #ff7200;
+    color: #fff;
+    font-size: 15px;
+    letter-spacing: 1px;
+    margin-top: 30px;
+    font-family: sans-serif;
+    padding: 5px 0; /* Add slight padding */
+}
+
+.form input:focus {
+    outline: none;
+}
+
+::placeholder {
+    color: #ccc; /* Lighter placeholder */
+    font-family: Arial;
+}
+
+.btnn {
+    width: 100%; /* Full width button */
+    height: 40px;
+    background: #ff7200;
+    border: none;
+    margin-top: 30px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.4s ease;
+}
+
+.btnn:hover {
+    background: #fff;
+    color: #ff7200;
+}
+
+.form .link {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+    padding-top: 20px;
+    text-align: center;
+    color: #fff; /* Make text white */
+    line-height: 1.4; /* Improve line spacing */
+}
+
+.form .link a {
+    text-decoration: none;
+    color: #ff7200;
+}
+
+.liw {
+    padding-top: 15px;
+    padding-bottom: 10px;
+    text-align: center;
+    color: #fff; /* Make text white */
+}
+
+.icons {
+    text-align: center; /* Center icons */
+}
+
+.icons a {
+    text-decoration: none;
+    color: #fff;
+    display: inline-block; /* Ensure proper spacing */
+    margin: 0 5px; /* Add space between icons */
+}
+
+.icons ion-icon {
+    color: #fff;
+    font-size: 30px;
+    padding-top: 5px;
+    transition: 0.3s ease;
+}
+
+.icons ion-icon:hover {
+    color: #ff7200;
+}
+
+/* --- Responsive Adjustments (Example) --- */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+    }
+    .menu ul {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-top: 15px;
+    }
+    ul li {
+        margin: 10px 0;
+    }
+    .search {
+        width: 100%;
+        justify-content: center;
+        margin-top: 15px;
+    }
+    .srch{
+        width: 60%; /* Adjust search input width */
+    }
+    .content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .content-text {
+        padding-right: 0;
+        order: 1; /* Show text first */
+    }
+    .form {
+        order: 2; /* Show form second */
+        margin-top: 30px;
+    }
+    .content-text h1 {
+        font-size: 40px;
+    }
+    .content-text span {
+        font-size: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+     .content-text h1 {
+        font-size: 32px;
+    }
+    .content-text span {
+        font-size: 40px;
+    }
+    .form {
+        max-width: 90%; 
+        padding: 20px;
+    }
+     .form h2 {
+        font-size: 20px;
+    }
+}

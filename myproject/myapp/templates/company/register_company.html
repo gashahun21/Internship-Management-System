@@ -1,31 +1,512 @@
-{% extends 'departement_head/base.html' %}
-{% block title %}Register Company{% endblock %}
+{% extends 'admin/admin_base.html' %}
+{% load static %} {# Ensure static is loaded if base_template doesn't #}
+
+{% block title %}Register New Company{% endblock %}
 
 {% block content %}
-<div class="content-wrapper">
-    <section class="content-header">
-        <h1>Register a New Company</h1>
-    </section>
 
-    <section class="content">
-        <div class="container-fluid">
-            <div class="card card-primary">
-                <div class="card-header">
-                    <h3 class="card-title">Company Details</h3>
-                </div>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="card-body">
-                        <div class="form-group">
-                            {{ form.as_p }}
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-primary">Register</button>
-                    </div>
-                </form>
-            </div>
+<style>
+    /* --- CSS Variables (Define or inherit from admin_base.html) --- */
+    :root {
+        /* Reusing variables from previous examples - Adjust if admin_base defines differently */
+        --primary-color: #007bff;
+        --primary-color-darker: #0056b3;
+        --secondary-color: #6c757d;
+        --secondary-color-darker: #5a6268;
+        --danger-color: #dc3545;
+        --danger-color-lighter: rgba(220, 53, 69, 0.25);
+        --success-color: #28a745;
+        --light-bg: #f8f9fa;
+        --white: #fff;
+        --text-color: #495057;
+        --text-muted: #6c757d;
+        --border-color: #dee2e6;
+        --input-border-color: #ced4da;
+        --input-focus-border-color: #80bdff;
+        --input-focus-box-shadow: 0 0 0 .2rem rgba(0, 123, 255, 0.25);
+        --invalid-input-border-color: var(--danger-color);
+        --invalid-input-focus-box-shadow: 0 0 0 .2rem var(--danger-color-lighter);
+        --base-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        --border-radius: 0.375rem;
+        --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    }
+
+    /* Assuming admin_base.html provides main layout wrappers */
+    /* Styling the card within the content block */
+
+    /* --- Card Styling --- */
+    .card {
+        background-color: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        width: 100%;
+        max-width: 800px; /* Wider card for company details */
+        margin: 2rem auto;
+        overflow: hidden;
+    }
+
+    .card-primary {
+        border-top: 4px solid var(--primary-color);
+    }
+
+    .card-header {
+        background-color: var(--light-bg);
+        color: var(--text-color);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 1.5rem;
+    }
+
+    .card-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .card-footer {
+        background-color: var(--light-bg);
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+        text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+
+    /* --- Form Element Styling --- */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        font-family: var(--base-font-family);
+        color: #343a40;
+        font-size: 0.9rem;
+    }
+
+    .form-control { /* Class should be added via forms.py widget attrs */
+        display: block;
+        width: 100%;
+        padding: .5rem .75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--text-color);
+        background-color: var(--white);
+        background-clip: padding-box;
+        border: 1px solid var(--input-border-color);
+        border-radius: var(--border-radius);
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        box-sizing: border-box;
+        font-family: var(--base-font-family);
+    }
+     /* Ensure selects look consistent if used */
+     select.form-control {
+        height: calc(1.5em + 1rem + 2px);
+    }
+    /* Textarea height */
+    textarea.form-control {
+        min-height: 100px;
+    }
+    .form-control:focus {
+        border-color: var(--input-focus-border-color);
+        outline: 0;
+        box-shadow: var(--input-focus-box-shadow);
+    }
+
+    /* --- Button Styling --- */
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--text-color);
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        cursor: pointer;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: 0.5rem 1rem;
+        font-size: 0.95rem;
+        border-radius: var(--border-radius);
+        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+    .btn:focus {
+         outline: 0;
+         /* Add appropriate focus shadow variable if needed */
+         /* box-shadow: 0 0 0 .2rem rgba(var(--bs-btn-focus-shadow-rgb), .5); */
+    }
+     .btn:disabled, .btn.disabled {
+        opacity: .65;
+        pointer-events: none;
+    }
+
+    .btn-primary {
+        color: var(--white);
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    .btn-primary:hover {
+        color: var(--white);
+        background-color: var(--primary-color-darker);
+        border-color: var(--primary-color-darker);
+    }
+     .btn-primary:focus { box-shadow: 0 0 0 .2rem var(--input-focus-box-shadow); }
+
+    .btn-secondary {
+        color: var(--white);
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+    .btn-secondary:hover {
+        color: var(--white);
+        background-color: var(--secondary-color-darker);
+        border-color: var(--secondary-color-darker);
+    }
+     .btn-secondary:focus { box-shadow: 0 0 0 .2rem rgba(108, 117, 125, .5); }
+
+
+    /* --- Error Styling --- */
+    .error-message { /* For JS errors */
+        color: var(--danger-color);
+        font-size: 0.875em;
+        margin-top: .25rem;
+        display: none;
+        width: 100%;
+    }
+    .errorlist { /* Django's error list */
+        list-style-type: none;
+        padding: 0;
+        margin: .25rem 0 0 0;
+        color: var(--danger-color);
+        font-size: 0.875em;
+    }
+    .errorlist div { /* Target wrapped errors */
+         margin: 0; padding: 0;
+    }
+    .form-control.is-invalid {
+        border-color: var(--invalid-input-border-color);
+        padding-right: calc(1.5em + .75rem);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(.375em + .1875rem) center;
+        background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+    }
+    .form-control.is-invalid:focus {
+        border-color: var(--invalid-input-border-color);
+        box-shadow: var(--invalid-input-focus-box-shadow);
+    }
+    .form-control.is-invalid + .error-message:not(:empty),
+    .form-control.is-invalid ~ .errorlist:not(:empty) { /* Show either JS or Django error message */
+        display: block;
+    }
+    .errorlist:not(:empty) { display: block; }
+
+    .alert-danger { /* For non-field errors */
+        color: #58151c;
+        background-color: #f8d7da;
+        border-color: #f1aeb5;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid transparent;
+        border-radius: var(--border-radius);
+    }
+
+    .form-text { /* Help text */
+        font-size: .875em;
+        color: var(--text-muted);
+        margin-top: .25rem;
+        font-family: var(--base-font-family);
+    }
+
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 576px) {
+        .card-body { padding: 1.5rem; }
+        .card-footer {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+        }
+        .card-footer .btn { width: 100%; }
+    }
+</style>
+
+{# Remove outer wrappers like content-wrapper/section if admin_base.html provides them #}
+{# Assuming admin_base provides the main structure around the block #}
+<section class="content pt-3"> {# Added padding-top utility class example #}
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Company Registration Form</h3>
         </div>
-    </section>
-</div>
+        <!-- /.card-header -->
+        <!-- form start -->
+        <form method="post" id="companyForm" novalidate>
+            {% csrf_token %}
+            <div class="card-body">
+
+                {# Non-Field Errors #}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}{% if not forloop.last %}<br>{% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {# Loop through visible fields - Replaces form.as_p #}
+                {% for field in form.visible_fields %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+
+                        {# Add 'form-control' class via widget attrs in forms.py for consistency #}
+                        {{ field }}
+
+                        {# Field-Specific Errors from Django #}
+                        {% if field.errors %}
+                            <div class="errorlist">
+                                {% for error in field.errors %}
+                                    <div>{{ error }}</div> {# Render each error directly #}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {# JavaScript Error Placeholder #}
+                        <div class="error-message" id="{{ field.auto_id }}_js_error"></div>
+
+                        {# Help Text #}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {# Hidden Fields (Important!) #}
+                {% for field in form.hidden_fields %}
+                    {{ field }}
+                {% endfor %}
+
+            </div><!-- /.card-body -->
+
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-1"></i> {# Example Icon #}
+                    Register Company
+                </button>
+                {# Add a relevant cancel URL - e.g., a company list view or admin dashboard #}
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary" id="cancelButton">
+                     Cancel
+                </a>
+            </div>
+        </form>
+    </div><!-- /.card -->
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('companyForm');
+    const cancelButton = document.getElementById('cancelButton');
+    let djangoErrorsPresentOnLoad = form.querySelectorAll('.errorlist:not(:empty)').length > 0;
+
+    // --- Define Fields for JS Validation ---
+    // !!! Adjust these based on your actual Company form fields !!!
+    const fieldsToValidate = [
+        {
+            id: 'id_name',              // Company Name
+            errorIdKey: 'name_error',
+            required: true,
+            validate: value => value && value.trim().length >= 2
+        },
+        {
+            id: 'id_email',             // Company Email (optional?)
+            errorIdKey: 'email_error',
+            required: false, // Make true if required
+            validate: value => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) // Valid email format if provided
+        },
+         {
+            id: 'id_website',           // Company Website (optional?)
+            errorIdKey: 'website_error',
+            required: false,
+            validate: value => {
+                if (!value) return true; // Optional field is valid if empty
+                try {
+                    // Basic check: starts with http/https and has some domain part
+                    // For stricter validation, use a more complex regex or URL constructor
+                    const url = new URL(value.startsWith('http') ? value : 'http://' + value);
+                    return url.hostname && url.hostname.includes('.');
+                } catch (_) {
+                    return false; // Invalid URL format
+                }
+            }
+        },
+        {
+            id: 'id_phone',             // Company Phone (optional?)
+            errorIdKey: 'phone_error',
+            required: false,
+            validate: value => !value || /^\+?[\d\s\-()]{7,20}$/.test(value) // Lenient phone format if provided
+        },
+        {
+            id: 'id_address',           // Company Address (optional?)
+            errorIdKey: 'address_error',
+            required: false, // Make true if required
+            validate: value => !value || value.trim().length >= 5 // Min length if provided
+        },
+        // Add other company fields here (e.g., city, country, postcode, description)
+        // { id: 'id_city', errorIdKey: 'city_error', required: true, validate: value => value && value.trim().length > 0 },
+    ];
+
+    // --- Helper Function to Get Error Messages ---
+    function getErrorMessage(errorIdKey) {
+        const messages = {
+            'name_error': 'Company name must be at least 2 characters long.',
+            'email_error': 'Please enter a valid email address (e.g., contact@company.com).',
+            'website_error': 'Please enter a valid website URL (e.g., https://www.company.com).',
+            'phone_error': 'Please enter a valid phone number or leave blank.',
+            'address_error': 'Address must be at least 5 characters long if provided.',
+            'city_error': 'Please enter the city.'
+            // Add messages for other fields
+        };
+        return messages[errorIdKey] || 'This field has an invalid value.';
+    }
+
+    // --- Core Validation Function (Similar to previous examples) ---
+    function validateField(fieldConfig) {
+        const input = document.getElementById(fieldConfig.id);
+        if (!input) return true;
+
+        const jsErrorElement = document.getElementById(fieldConfig.id + '_js_error');
+        const djangoErrorList = input.closest('.form-group')?.querySelector('.errorlist');
+        const value = (input.type === 'checkbox') ? input.checked : input.value; // Handle different input types if necessary
+        let isFieldValid = true;
+
+        // Reset state
+        input.classList.remove('is-invalid');
+        input.removeAttribute('aria-invalid');
+        input.removeAttribute('aria-describedby');
+        if (jsErrorElement) jsErrorElement.textContent = '';
+
+        const hasOriginalDjangoError = djangoErrorsPresentOnLoad && djangoErrorList && djangoErrorList.textContent.trim() !== '';
+
+        if (hasOriginalDjangoError) {
+             input.classList.add('is-invalid'); // Keep Django error style initially
+             input.setAttribute('aria-invalid', 'true');
+             if (djangoErrorList.id) input.setAttribute('aria-describedby', djangoErrorList.id);
+
+             if (!fieldConfig.validate(value)) { // JS also finds it invalid
+                if (jsErrorElement) {
+                    jsErrorElement.textContent = getErrorMessage(fieldConfig.errorIdKey);
+                    jsErrorElement.id = fieldConfig.id + '_js_error';
+                    let describedby = input.getAttribute('aria-describedby');
+                    input.setAttribute('aria-describedby', (describedby ? describedby + ' ' : '') + jsErrorElement.id);
+                }
+                isFieldValid = false;
+            } else { // JS now finds it valid
+                 input.classList.remove('is-invalid'); // Remove visual error if JS passes now
+                 input.removeAttribute('aria-invalid');
+                 isFieldValid = true;
+            }
+        } else {
+            // Perform JS validation if no initial Django error
+            const isRequiredAndEmpty = fieldConfig.required && ( (typeof value === 'string' && value.trim() === '') || (typeof value === 'boolean' && !value) );
+            if (isRequiredAndEmpty || (value && (typeof value !== 'boolean') && !fieldConfig.validate(value)) ) { // Validate if required & empty, OR if has value and fails validation (skip boolean false check here)
+                input.classList.add('is-invalid');
+                input.setAttribute('aria-invalid', 'true');
+                if (jsErrorElement) {
+                    jsErrorElement.textContent = getErrorMessage(fieldConfig.errorIdKey);
+                    jsErrorElement.id = fieldConfig.id + '_js_error';
+                    input.setAttribute('aria-describedby', jsErrorElement.id);
+                }
+                isFieldValid = false;
+            }
+        }
+        return isFieldValid;
+    }
+
+    // --- Form Submission Validation ---
+    form.addEventListener('submit', function (event) {
+        let isFormValid = true;
+        djangoErrorsPresentOnLoad = false; // Reset flag
+
+        fieldsToValidate.forEach(fieldConfig => {
+            if (!validateField(fieldConfig)) {
+                isFormValid = false;
+            }
+        });
+
+        if (!isFormValid) {
+            event.preventDefault();
+            console.log("Client-side validation failed.");
+            const firstInvalid = form.querySelector('.is-invalid');
+            if (firstInvalid) {
+                 const formGroup = firstInvalid.closest('.form-group');
+                 if (formGroup) {
+                      formGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                 }
+                firstInvalid.focus({ preventScroll: true });
+            }
+        } else {
+             console.log("Client-side validation passed. Submitting...");
+             const submitButton = form.querySelector('button[type="submit"]');
+             if(submitButton) {
+                 submitButton.disabled = true;
+                 // Example using spinner icon: Assumes Font Awesome or similar is available
+                 submitButton.innerHTML = `<span class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span> Registering...`;
+             }
+        }
+    });
+
+    // --- Real-time Validation ---
+    fieldsToValidate.forEach(fieldConfig => {
+        const input = document.getElementById(fieldConfig.id);
+        if (input) {
+             const eventType = ['checkbox', 'radio', 'select-one', 'file', 'date'].includes(input.type) || input.tagName === 'SELECT' ? 'change' : 'input';
+            input.addEventListener(eventType, () => validateField(fieldConfig));
+            if (!['checkbox', 'radio', 'file'].includes(input.type)) { // Add blur validation for text-like inputs
+                input.addEventListener('blur', () => validateField(fieldConfig));
+            }
+        }
+    });
+
+    // --- Cancel Button Confirmation ---
+    cancelButton.addEventListener('click', function (event) {
+        let isDirty = false;
+        form.querySelectorAll('input:not([type="hidden"]), select, textarea').forEach(el => {
+            if (el.type === 'checkbox' || el.type === 'radio') {
+                if (el.checked !== el.defaultChecked) isDirty = true;
+            } else {
+                if (el.value !== el.defaultValue) isDirty = true;
+            }
+        });
+
+        if (isDirty) {
+            if (!confirm('You have unsaved changes. Are you sure you want to cancel?')) {
+                event.preventDefault();
+            }
+        }
+        // If not dirty or confirmed, navigation proceeds
+    });
+
+    // --- Initial Styling for Django Errors ---
+    form.querySelectorAll('.errorlist').forEach(errorList => {
+        if (errorList.textContent.trim() !== '') {
+            const input = errorList.closest('.form-group')?.querySelector('.form-control, input, select, textarea');
+            if (input) {
+                input.classList.add('is-invalid');
+                input.setAttribute('aria-invalid', 'true');
+                 const errorId = errorList.id || `error_${input.id}`;
+                 errorList.id = errorId;
+                 input.setAttribute('aria-describedby', errorId);
+            }
+        }
+    });
+});
+</script>
+
 {% endblock %}

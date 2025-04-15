@@ -1,0 +1,64 @@
+body {
+    background-image: url("{% static 'image/bg1' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-form {
+    background: transparent;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: none;
+}
+
+.form-control {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 10px;
+    color: #fff;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-primary {
+    background: rgba(0, 123, 255, 0.8);
+    border: none;
+}
+
+label, .login-form h4 {
+    color: #fff;
+}
+
+/* Accessibility improvements */
+label {
+    display: block; /* Make labels block-level for better spacing */
+    margin-bottom: 5px;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%; /* Ensure inputs take full width */
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .login-container {
+        padding: 10px; /* Reduce padding on smaller screens */
+    }
+    .login-form {
+        padding: 20px;
+    }
+}

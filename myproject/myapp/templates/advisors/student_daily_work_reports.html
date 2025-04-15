@@ -1,0 +1,78 @@
+{% extends 'advisors/base.html' %}
+{% block title %}Task Feedback{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <h1>Task Feedback</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            {% if tasks %}
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>Day</th>
+                                <th>Work Performed</th>
+                                <th>Advisor Feedback</th>
+                                <th>Supervisor Feedback</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr>
+                                <td>{{ task.week }}</td>
+                                <td>{{ task.deadline|date:"D, M d" }}</td>  <!-- Displaying deadline as day and date -->
+                                <td>{{ task.description }}</td>
+                                <td>
+                                    {% if task.advisor_feedback %}
+                                        <p>{{ task.advisor_feedback }}</p>
+                                    {% else %}
+                                        {% if task.days_worked >= 5 and task.week == current_week %}  <!-- Check if five days have been reported and it's the current week -->
+                                            <a href="{% url 'provide_feedback' task.id %}" class="btn btn-warning">
+                                                <i class="fas fa-comment"></i> Provide Feedback
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if task.supervisor_feedback %}
+                                        <p>{{ task.supervisor_feedback }}</p>
+                                    {% else %}
+                                        <span class="badge badge-warning">No Feedback Yet</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if task.is_confirmed %}
+                                        <span class="badge badge-success">Confirmed</span>
+                                    {% else %}
+                                        <span class="badge badge-warning">Pending Review</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <h5><i class="icon fas fa-info"></i> No feedback available yet!</h5>
+                Your tasks haven't been reviewed by your advisor yet. Check back later.
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

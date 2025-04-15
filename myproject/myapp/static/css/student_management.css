@@ -1,0 +1,449 @@
+/* === RESET & BASE STYLES === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    padding: 40px 20px;
+    line-height: 1.5;
+}
+
+/* === CONTENT WRAPPER === */
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* === PAGE HEADER === */
+.content-header {
+    margin-bottom: 32px;
+}
+
+.content-header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.content-header p.lead {
+    font-size: 0.875rem;
+    color: #6b7280;
+    max-width: 600px;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: 0.75rem;
+}
+
+.breadcrumb-item a {
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: #3b82f6;
+}
+
+.breadcrumb-item.active {
+    color: #1a202c;
+}
+
+/* === CARD STYLES === */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+    background: #f9fafc;
+}
+
+.card-outline.card-primary {
+    border-left: 4px solid #3b82f6;
+}
+
+.card-header {
+    background: #f9fafc;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-tools {
+    display: flex;
+    align-items: center;
+}
+
+/* === TABLE STYLES (Converted to List Items) === */
+.table-responsive {
+    padding: 0;
+}
+
+.table {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+
+.table thead {
+    display: none; /* Hide table header as we're using a list layout */
+}
+
+.table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.table tr {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.table tr:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.table td {
+    border: none;
+    font-size: 0.875rem;
+    color: #1a202c;
+    padding: 0;
+}
+
+.table td:nth-child(1) { /* Counter */
+    display: none; /* Hide counter as it's not in the image */
+}
+
+.table td:nth-child(2) { /* Student Name */
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+}
+
+.table td:nth-child(3), /* Major */
+.table td:nth-child(4) { /* Year */
+    display: none; /* Hide these as they aren't in the image */
+}
+
+.table td:nth-child(5) { /* Academic Progress */
+    margin-right: 16px;
+}
+
+.table td:nth-child(6) { /* Advisor Assignment */
+    margin-right: 16px;
+}
+
+.table td:nth-child(7) { /* Actions */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* === AVATAR STYLES === */
+.student-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e5e7eb;
+}
+
+.student-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.student-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1a202c;
+}
+
+.student-email {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* === BUTTON STYLES === */
+.btn {
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: #10b981;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-success:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.btn-warning {
+    background: #f59e0b;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-warning:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #6b7280;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: #f1f3f5;
+    color: #3b82f6;
+}
+
+.btn-danger {
+    background: transparent;
+    color: #6b7280;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #f1f3f5;
+    color: #ef4444;
+}
+
+.btn-group .btn {
+    margin: 0;
+}
+
+/* === BADGE STYLES === */
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 16px;
+}
+
+.badge-info {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+    padding: 48px;
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    color: #d1d5db;
+}
+
+.empty-state h4 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 12px 0 8px;
+}
+
+.empty-state p {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* === CARD FOOTER === */
+.card-footer {
+    background: #f9fafc;
+    border-top: 1px solid #e5e7eb;
+    padding: 12px 20px;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* === MODAL STYLES === */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 16px 20px;
+}
+
+.modal-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-body h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 12px;
+}
+
+.modal-body ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 16px;
+}
+
+.modal-body ul li {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.modal-body ul li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #3b82f6;
+    font-size: 1.25rem;
+}
+
+.modal-body p {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* === RESPONSIVE STYLES === */
+@media (max-width: 992px) {
+    .content-wrapper {
+        padding: 16px;
+    }
+
+    .content-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-header .row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .breadcrumb {
+        float: none !important;
+    }
+
+    .table tr {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .table td:nth-child(5),
+    .table td:nth-child(6) {
+        flex: 1 1 100%;
+        margin: 0;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .card-tools {
+        width: 100%;
+    }
+
+    .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding: 16px 8px;
+    }
+
+    .content-header h1 {
+        font-size: 1.25rem;
+    }
+
+    .btn, .btn-sm {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+}
