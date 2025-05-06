@@ -1,184 +1,282 @@
 {% extends 'company_admin/base.html' %}
+{% load static %}
+{% load humanize %}
+
 {% block title %}Company Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}?v=1.1">
+    <link rel="stylesheet" href="{% static 'css/company_admin_dashboard.css' %}?v=1.0">
+    <style>
+        .stats-card .card-icon i {
+            font-size: 1.8rem;
+        }
+        .management-card .card-body .btn {
+            margin: 5px;
+        }
+        .btn-action i {
+            margin-right: 6px;
+        }
+        .action-card-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .action-card-item:last-child {
+            border-bottom: none;
+        }
+        .action-card-icon {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-right: 15px;
+            width: 30px;
+            text-align: center;
+        }
+        .action-card-title {
+            flex-grow: 1;
+            font-weight: 500;
+            color: #495057;
+        }
+        .action-card-buttons .btn {
+            margin-left: 5px;
+        }
+        .status-badge.status-open { background-color: #d1fae5; color: #065f46; }
+        .status-badge.status-closed { background-color: #fee2e2; color: #991b1b; }
+        .status-badge.status-default { background-color: #e5e7eb; color: #374151; }
+        .card-icon i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            color: #0d0221;
+        }
+    .management-section{
+        margin-bottom: 20px;
+        background-color: #ffff;
+        padding: 5%;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    </style>
+{% endblock %}
+
 {% block content %}
-<div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-12">
-                    <h1 class="text-center mb-4">
-                        Welcome, <span class="text-primary">{{ user.get_full_name|default:user.username }}</span>
-                    </h1>
+<div class="container-fluid dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            Welcome, <span class="text-primary">{{ user.get_full_name|default:user.username }}</span>
+        </h1>
+        <h1> Company: {{ company.name }}</h1>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stats-card border-left-primary">
+            <div class="card-content">
+                <span class="card-icon"><i class="fas fa-file-alt"></i></span>
+                <div class="card-info">
+                    <h3 class="card-value">{{ stats.total_applications|default:0 }}</h3>
+                    <p class="card-label">Total Applications</p>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
-    </section>
+        </div>
+        <div class="stats-card border-left-success">
+            <div class="card-content">
+                <span class="card-icon"><i class="fas fa-briefcase"></i></span>
+                <div class="card-info">
+                    <h3 class="card-value">{{ stats.open_internships|default:0 }}</h3>
+                    <p class="card-label">Open Internships</p>
+                </div>
+            </div>
+        </div>
+        <div class="stats-card border-left-info">
+            <div class="card-content">
+                <span class="card-icon"><i class="fas fa-hourglass-half"></i></span>
+                <div class="card-info">
+                    <h3 class="card-value">{{ stats.pending_applications|default:0 }}</h3>
+                    <p class="card-label">Pending Applications</p>
+                </div>
+            </div>
+        </div>
+        <div class="stats-card border-left-danger">
+            <div class="card-content">
+                <span class="card-icon"><i class="fas fa-user-tie"></i></span>
+                <div class="card-info">
+                    <h3 class="card-value">{{ total_supervisors|default:0 }}</h3>
+                    <p class="card-label">Total Supervisors</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Main Content -->
-    <section class="content">
-        <div class="container-fluid">
-            <!-- Stats Section -->
-            <div class="row">
-                <!-- Total Applications -->
-                <div class="col-md-4">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Total Applications</h3>
+    <div class="row">
+        <div class="col-lg-6 ">
+            <section class="management-section">
+                <div class="management-card">
+                    <div class="card-header" style="background: transparent; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                        <h3 class="section-title" style="font-size: 1.2rem; margin-bottom: 0;">
+                            <i class="fas fa-tasks mr-2" style="color: #f6c23e;"></i>Quick Actions
+                        </h3>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="action-card-item">
+                            <span class="action-card-icon"><i class="fas fa-file-alt text-primary"></i></span>
+                            <span class="action-card-title">Applications</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'manage_applications' %}" class="btn btn-sm btn-outline-primary">Manage</a>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <p class="card-text display-4">{{ stats.total_applications }}</p>
+                        <div class="action-card-item">
+                            <span class="action-card-icon">
+                                <i class="fas fa-toggle-{% if company.is_accepting_applications %}on text-success{% else %}off text-danger{% endif %}"></i>
+                            </span>
+                            <span class="action-card-title">Accepting Applications</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'toggle_applications' %}" class="btn btn-sm {% if company.is_accepting_applications %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                                    {% if company.is_accepting_applications %}Close Now{% else %}Open Now{% endif %}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="action-card-item">
+                            <span class="action-card-icon"><i class="fas fa-user-tie text-info"></i></span>
+                            <span class="action-card-title">Assign Supervisors</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'assign_supervisor_to_students' %}" class="btn btn-sm btn-outline-info">Assign</a>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- Open Internships -->
-                <div class="col-md-4">
-                    <div class="card card-success">
-                        <div class="card-header">
-                            <h3 class="card-title">Open Internships</h3>
+            <section class="management-section">
+                <div class="management-card">
+                    <div class="card-header" style="background: transparent; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                        <h3 class="section-title" style="font-size: 1.2rem; margin-bottom: 0;">
+                            <i class="fas fa-users-cog mr-2" style="color: #e74a3b;"></i>Supervisors
+                        </h3>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="action-card-item">
+                            <span class="action-card-icon"><i class="fas fa-user-plus text-danger"></i></span>
+                            <span class="action-card-title">Add New Supervisor</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'supervisor_register' %}" class="btn btn-sm btn-outline-danger">Add</a>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <p class="card-text display-4">{{ stats.open_internships }}</p>
+                        <div class="action-card-item">
+                            <span class="action-card-icon"><i class="fas fa-users text-warning"></i></span>
+                            <span class="action-card-title">View All Supervisors</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'supervisor_list' %}" class="btn btn-sm btn-outline-warning">View List</a>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- Pending Applications -->
-                <div class="col-md-4">
-                    <div class="card card-info">
-                        <div class="card-header">
-                            <h3 class="card-title">Pending Applications</h3>
+            <section class="management-section">
+                <div class="management-card">
+                    <div class="card-header" style="background: transparent; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                        <h3 class="section-title" style="font-size: 1.2rem; margin-bottom: 0;">
+                            <i class="fas fa-chart-bar mr-2" style="color: #36b9cc;"></i>Reports
+                        </h3>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="action-card-item">
+                            <span class="action-card-icon"><i class="fas fa-file-pdf text-info"></i></span>
+                            <span class="action-card-title">Generate Reports</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'generate_reports' %}" class="btn btn-sm btn-outline-info">Generate</a>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <p class="card-text display-4">{{ stats.pending_applications }}</p>
+                        <div class="action-card-item">
+                            <span class="action-card-icon"><i class="fas fa-eye text-secondary"></i></span>
+                            <span class="action-card-title">View Saved Reports</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'home' %}" class="btn btn-sm btn-outline-secondary">View</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div><!-- /.row -->
+            </section>
+        </div>
 
-            <!-- Actions Section -->
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="card card-warning">
-                        <div class="card-header">
-                            <h3 class="card-title">Actions</h3>
+        <div class="col-lg-6">
+            <section class="management-section">
+                <div class="management-card">
+                    <div class="card-header" style="background: transparent; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                        <h3 class="section-title" style="font-size: 1.2rem; margin-bottom: 0;">
+                            <i class="fas fa-bullhorn mr-2" style="color: #858796;"></i>Internship Postings
+                        </h3>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="action-card-item">
+                            <span class="action-card-icon"><i class="fas fa-plus text-success"></i></span>
+                            <span class="action-card-title">Post New Internship</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'post_internship' %}" class="btn btn-sm btn-outline-success">Post</a>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <a href="{% url 'manage_applications' %}" class="btn btn-primary">
-                                <i class="fas fa-file-alt"></i> Manage Applications
-                            </a>
-                            <a href="{% url 'toggle_applications' %}" class="btn btn-warning">
-                                <i class="fas fa-toggle-{% if company.is_accepting_applications %}on{% else %}off{% endif %}"></i>
-                                {% if company.is_accepting_applications %}Close Applications{% else %}Open Applications{% endif %}
-                            </a>
-                            <!-- New Button: Assign Supervisor to Students -->
-                            <a href="{% url 'assign_supervisor_to_students' %}" class="btn btn-success">
-                                <i class="fas fa-user-tie"></i> Assign Supervisor to Students
-                            </a>
+                        <div class="action-card-item">
+                            <span class="action-card-icon"><i class="fas fa-list text-info"></i></span>
+                            <span class="action-card-title">View All Internships</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'view_internships' %}" class="btn btn-sm btn-outline-info">View List</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div><!-- /.row -->
+            </section>
 
-            <!-- Internship Postings Section -->
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="card card-secondary">
-                        <div class="card-header">
-                            <h3 class="card-title">Internship Postings</h3>
-                        </div>
-                        <div class="card-body">
-                            <a href="{% url 'post_internship' %}" class="btn btn-success">
-                                <i class="fas fa-plus"></i> Post New Internship
-                            </a>
-                            <a href="{% url 'view_internships' %}" class="btn btn-info">
-                                <i class="fas fa-list"></i> View Internships
-                            </a>
+            <section class="management-section">
+                <div class="management-card">
+                    <div class="card-header" style="background: transparent; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                        <h3 class="section-title" style="font-size: 1.2rem; margin-bottom: 0;">
+                            <i class="fas fa-building mr-2" style="color: #6f42c1;"></i>Company Profile
+                        </h3>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="action-card-item">
+                            <span class="action-card-icon"><i class="fas fa-edit text-purple"></i></span>
+                            <span class="action-card-title">Edit Company Profile</span>
+                            <div class="action-card-buttons">
+                                <a href="{% url 'edit_company' company.id %}" class="btn btn-sm btn-outline-purple">Edit</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div><!-- /.row -->
+            </section>
 
-            <!-- Supervisors Section -->
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="card card-danger">
-                        <div class="card-header">
-                            <h3 class="card-title">Supervisors</h3>
-                        </div>
-                        <div class="card-body">
-                            <a href="{% url 'supervisor_register' %}" class="btn btn-danger">
-                                <i class="fas fa-user-plus"></i> Add Supervisor
-                            </a>
-                            <a href="{% url 'supervisor_list' %}" class="btn btn-warning">
-                                <i class="fas fa-users"></i> View Supervisors
-                            </a>
-                        </div>
+            <section class="management-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Notifications</h2>
+                    {% if notifications.count > 5 %}
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    {% endif %}
+                </div>
+                <div class="management-card">
+                    <div class="card-body" style="padding: 0; max-height: 350px; overflow-y: auto;">
+                        <ul class="list-group list-group-flush notification-list">
+                            {% for notification in notifications|slice:":5" %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center" style="background: transparent; border-color: #eee;">
+                                    <span style="font-size: 0.9rem;">
+                                        <i class="fas fa-info-circle mr-2 text-muted"></i> {{ notification.message }}
+                                    </span>
+                                    <span class="status-badge {% if notification.status %}status-default{% else %}status-open{% endif %}">
+                                        {{ notification.status|yesno:"Read,New" }}
+                                    </span>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item text-muted no-data" style="background: transparent; border: none;">
+                                    <i class="fas fa-check-circle mr-2"></i> No new notifications.
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
-            </div><!-- /.row -->
-
-            <!-- Company Profile Section -->
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="card card-purple">
-                        <div class="card-header">
-                            <h3 class="card-title">Company Profile</h3>
-                        </div>
-                        <div class="card-body">
-                            <a href="{% url 'edit_company' company.id %}" class="btn btn-purple">
-                                <i class="fas fa-edit"></i> Edit Profile
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- /.row -->
-
-            <!-- Reports Section -->
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="card card-info">
-                        <div class="card-header">
-                            <h3 class="card-title">Reports</h3>
-                        </div>
-                        <div class="card-body">
-                            <a href="{% url 'generate_reports' %}" class="btn btn-info">
-                                <i class="fas fa-file-pdf"></i> Generate Reports
-                            </a>
-                            <a href="{% url 'home' %}" class="btn btn-secondary">
-                                <i class="fas fa-file-alt"></i> View Reports
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- /.row -->
-
-            <!-- Notifications Section -->
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="card card-success">
-                        <div class="card-header">
-                            <h3 class="card-title">Notifications</h3>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group">
-                                {% for notification in notifications %}
-                                    <li class="list-group-item">
-                                        {{ notification.message }}
-                                        <span class="badge badge-{{ notification.status|yesno:'success,danger' }}">
-                                            {{ notification.status|yesno:"Read,Unread" }}
-                                        </span>
-                                    </li>
-                                {% empty %}
-                                    <li class="list-group-item">No new notifications.</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
-    </section>
+            </section>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
 {% endblock %}
