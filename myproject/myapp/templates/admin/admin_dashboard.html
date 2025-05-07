@@ -3,7 +3,8 @@
 {% load humanize %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}?v=1.2"> {# Version bump #}
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}?v=1.3">
+  
 {% endblock %}
 
 {% block content %}
@@ -13,12 +14,11 @@
         <h1 class="dashboard-title">Admin Dashboard</h1>
     </div>
 
-    <!-- Stats Section - All Cards Clickable -->
     <div class="stats-grid">
         <a href="{% url 'admin_dashboard' %}?filter=departments" class="stats-card-link" title="View only Departments">
             <div class="stats-card border-left-primary">
                 <div class="card-content">
-                    <span class="card-icon"><i class="fas fa-building color: green"></i></span>
+                    <span class="card-icon"><i class="fas fa-building"></i></span>
                     <div class="card-info">
                         <h3 class="card-value">{{ total_departments|default:0 }}</h3>
                         <p class="card-label">Total Departments</p>
@@ -26,7 +26,7 @@
                 </div>
             </div>
         </a>
-        <a href="{% url 'admin_dashboard' %}?filter=role_all" class="stats-card-link" title="View All Users"> {# Filter for all roles #}
+        <a href="{% url 'admin_dashboard' %}?filter=role_all" class="stats-card-link" title="View All Users">
             <div class="stats-card border-left-success">
                 <div class="card-content">
                     <span class="card-icon"><i class="fas fa-users"></i></span>
@@ -83,45 +83,49 @@
         </a>
     </div>
 
-    <!-- Recent Users Section -->
-    <section class="management-section">
+    <div class="search-bar-container">
+        <input type="search" id="dashboard-search" placeholder="Search users, departments, companies..." class="form-control">
+    </div>
+
+    <section class="management-section" id="users-section">
         <div class="section-header">
-            <div class="section-header-title"> 
+            <div class="section-header-left" style="display: flex; align-items: center; gap: 10px;">
                 <h2 class="section-title">
-                    {% if current_filter == 'role_student' %}Students
-                    {% elif current_filter == 'role_advisor' %}Advisors
-                    {% elif current_filter == 'role_supervisor' %}Supervisors
+                    {% if current_filter == 'students' %}Students
+                    {% elif current_filter == 'advisors' %}Advisors
+                    {% elif current_filter == 'supervisors' %}Supervisors
                     {% elif current_filter == 'role_all' %}All Users
-                    {% elif current_filter %} {# If filtered by Depts/Comps, show recent #} Recent Users
-                    {% else %}Recent Registered Users
+                    {% elif current_filter %} Recent Users
+                    {% else %}Registered Users
                     {% endif %}
                 </h2>
                 {% if current_filter and current_filter|slice:":4" == 'role' and current_filter != 'role_all' %}
                     <a href="{% url 'admin_dashboard' %}?filter=role_all" class="btn btn-sm btn-link view-all-link">View All Users</a>
                 {% endif %}
+                <button class="section-toggle-btn" data-target="#users-list" aria-expanded="true" title="Toggle Users List">
+                    <i class="fas fa-minus"></i>
+                </button>
             </div>
             <a href="{% url 'role_selection' %}" class="btn btn-add"><i class="fas fa-plus"></i> Add User</a>
         </div>
         <div class="item-list-container" id="users-list">
             {% for user in recent_users %}
-            <div class="list-item-card">
-                    <div class="item-icon-wrapper">
-                        {% if user.profile_image %}
-                        <img src="{{ user.profile_image.url }}" alt="{{ user.username }} Avatar" class="item-icon">
+            {% with user_role_text=user.get_role_display|default:'' user_dept_text=user.get_department_name|default:'' user_comp_text=user.get_company_name|default:'' %}
+            <div class="list-item-card"
+                 data-searchable-text="{{ user.get_full_name|default:user.username|lower }} {{ user.email|default:''|lower }} {{ user_role_text|lower }} {{ user_dept_text|lower }} {{ user_comp_text|lower }}">
+                <div class="item-icon-wrapper">
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" alt="{{ user.username }} Avatar" class="item-icon user-avatar">
                     {% else %}
-                        <img src="/static/images/default_avatar.png" alt="{{ user.username }} Avatar" class="item-icon">
+                        <img src="{% static 'images/default_avatar.png' %}" alt="{{ user.username }} Avatar" class="item-icon user-avatar">
                     {% endif %}
-                    
-                    </div>
-
-
-                 <div class="item-info">
-                    <!-- Left Column -->
+                </div>
+                <div class="item-info">
                     <div class="item-column">
-                        <span class="item-title">Name : {{ user.get_full_name|default:user.username }}</span>
+                        <span class="item-title">Name: {{ user.get_full_name|default:user.username }}</span>
                         <div class="item-details">
                             <span class="item-subtitle">
-                                <strong>Email</strong> : </strong> {{ user.email|default:'No email' }}
+                                <strong>Email:</strong> {{ user.email|default:'No email' }}
                             </span>
                             <div class="department">
                                 {% if user.student %}
@@ -173,93 +177,93 @@
                                     <span>Undeclared</span>
                                 {% endif %}
                             </div>
-                            
                         </div>
                     </div>
-                
-                    <!-- Right Column -->
                     <div class="item-column">
-                       
-                        <!-- <div class="item-meta">
-                            <span class="item-subtitle">
-                                Phone :  {{ user.phone|default:'N/A' }}
-                            </span>
-                        </div> -->
                         <div class="item-data item-data-role">
-                      <strong> <span class="status-badge {% if user.is_superuser %}status-admin{% elif user.is_department_head %}status-high{% elif user.is_advisor %}status-medium{% elif user.is_student %}status-low{% elif user.is_company_admin or user.is_supervisor %}status-very-high{% else %}status-default{% endif %}">
-                                {% if user.is_department_head %}Dept. Head
-                                {% elif user.is_student %}Student
-                                {% elif user.is_company_admin %}Comp. Admin
-                                {% elif user.is_advisor %}Advisor
-                                {% elif user.is_superuser %}Admin
-                                {% elif user.is_supervisor %}Supervisor
-                                {% else %}User
-                                {% endif %}
-                            </span></strong>
+                            <strong>
+                                <span class="status-badge {% if user.is_superuser %}status-admin{% elif user.is_department_head %}status-high{% elif user.is_advisor %}status-medium{% elif user.is_student %}status-low{% elif user.is_company_admin or user.is_supervisor %}status-very-high{% else %}status-default{% endif %}">
+                                    {% if user.is_department_head %}Dept. Head
+                                    {% elif user.is_student %}Student
+                                    {% elif user.is_company_admin %}Comp. Admin
+                                    {% elif user.is_advisor %}Advisor
+                                    {% elif user.is_superuser %}Admin
+                                    {% elif user.is_supervisor %}Supervisor
+                                    {% else %}User
+                                    {% endif %}
+                                </span>
+                            </strong>
                         </div>
                     </div>
                 </div>
-                
-               
-                 <div class="item-actions">
-                    <a href="#" class="action-btn view-btn" title="View Profile">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                      <a href="{% url 'user_update' user.id %}" class="action-btn edit-btn" title="Edit {{ user.username }}">
-                         <i class="fas fa-pencil-alt"></i>
-                     </a>
-                     <form action="{% url 'user_delete' user.id %}" method="post" class="delete-form" style="display: inline;"
-                           onsubmit="return confirm('Are you sure you want to delete user {{ user.username }}?');">
-                         {% csrf_token %}
-                         <button type="submit" class="action-btn delete-btn" title="Delete {{ user.username }}">
-                             <i class="fas fa-trash-alt"></i>
-                         </button>
-                     </form>
-                 </div>
-             </div>
+                <div class="item-actions">
+                    <a href="#" class="action-btn view-btn" title="View Profile"><i class="fas fa-eye"></i></a>
+                    <a href="{% url 'user_update' user.id %}" class="action-btn edit-btn" title="Edit {{ user.username }}"><i class="fas fa-pencil-alt"></i></a>
+                    <form action="{% url 'user_delete' user.id %}" method="post" class="delete-form" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete user {{ user.username }}?');">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn delete-btn" title="Delete {{ user.username }}"><i class="fas fa-trash-alt"></i></button>
+                    </form>
+                </div>
+            </div>
+            {% endwith %}
             {% empty %}
-                 {% if current_filter and current_filter|slice:":4" == 'role' %}
-                    <p class="no-data">No users found matching the '{{ current_filter|slice:"5:"|title }}' role.</p>
-                {% else %}
-                    <p class="no-data">No recent users found.</p>
-                {% endif %}
+                <p class="no-data default-no-data">
+                    {% if current_filter and current_filter|slice:":4" == 'role' %}
+                        No users found matching the '{{ current_filter|slice:"5:"|title }}' role.
+                    {% else %}
+                        No recent users found.
+                    {% endif %}
+                </p>
             {% endfor %}
+            <p class="no-data search-no-results" style="display: none;">No users match your search.</p>
         </div>
     </section>
 
-    <!-- Department Management Section -->
-    <section class="management-section">
+    <section class="pagination-section">
+        <div class="pagination-controls">
+            <button class="btn btn-sm btn-secondary" id="prev-page" disabled>Previous</button>
+            <span class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
+            <button class="btn btn-sm btn-secondary" id="next-page">Next</button>
+        </div>
+    </section>
+
+    <section class="management-section" id="departments-section">
         <div class="section-header">
-             <div class="section-header-title">
+            <div class="section-header-left" style="display: flex; align-items: center; gap: 10px;">
                 <h2 class="section-title">
-                    {% if current_filter == 'departments' %}All Departments{% else %}Recent Departments{% endif %}
+                    {% if current_filter == 'departments' %}All Departments{% else %}Departments{% endif %}
                 </h2>
                 {% if current_filter == 'departments' %}
                     <a href="{% url 'admin_dashboard' %}" class="btn btn-sm btn-link view-all-link">View Dashboard</a>
                 {% endif %}
-             </div>
+                <button class="section-toggle-btn" data-target="#departments-list" aria-expanded="true" title="Toggle Departments List">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
             <a href="{% url 'department_create' %}" class="btn btn-add"><i class="fas fa-plus"></i> Add Department</a>
         </div>
         <div class="item-list-container" id="departments-list">
             {% for department in departments %}
-                <div class="list-item-card">
+                {% with head_name=department.get_head_name|default:'' %}
+                <div class="list-item-card"
+                     data-searchable-text="{{ department.name|lower }} {{ head_name|lower }}">
                     <div class="item-icon-wrapper">
-                         <img src="{% static 'images/department_icon.png' %}" alt="Department Icon" class="item-icon department-avatar">
+                        <img src="{% static 'images/department_icon.png' %}" alt="Department Icon" class="item-icon department-avatar">
                     </div>
                     <div class="item-info">
                         <span class="item-title">{{ department.name }}</span>
                         <span class="item-subtitle">
-                             <i class="fas fa-user-tie fa-fw"></i> Head: {% if department.departmenthead_set.first.user %}{{ department.departmenthead_set.first.user.get_full_name|default:department.departmenthead_set.first.user.username }}{% else %}Not Assigned{% endif %}
+                            <i class="fas fa-user-tie fa-fw"></i> Head: {% if department.departmenthead_set.first.user %}{{ department.departmenthead_set.first.user.get_full_name|default:department.departmenthead_set.first.user.username }}{% else %}Not Assigned{% endif %}
                         </span>
                     </div>
-                     <div class="item-data item-data-students">
-                         <i class="fas fa-user-graduate fa-fw"></i> {{ department.student_set.count|default:0 }} Student{{ department.student_set.count|pluralize }}
-                     </div>
-                     <div class="item-data item-data-advisors">
+                    <div class="item-data item-data-students">
+                        <i class="fas fa-user-graduate fa-fw"></i> {{ department.student_set.count|default:0 }} Student{{ department.student_set.count|pluralize }}
+                    </div>
+                    <div class="item-data item-data-advisors">
                         <span class="status-badge status-medium" title="Advisors in {{ department.name }}">
-                           <i class="fas fa-chalkboard-teacher"></i> {{ department.advisor_set.count|default:0 }} Advisor{{ department.advisor_set.count|pluralize }}
+                            <i class="fas fa-chalkboard-teacher"></i> {{ department.advisor_set.count|default:0 }} Advisor{{ department.advisor_set.count|pluralize }}
                         </span>
-                     </div>
+                    </div>
                     <div class="item-actions">
                         <a href="{% url 'department_update' department.id %}" class="action-btn edit-btn" title="Edit {{ department.name }}">
                             <i class="fas fa-pencil-alt"></i>
@@ -273,28 +277,33 @@
                         </form>
                     </div>
                 </div>
+                {% endwith %}
             {% empty %}
-                <p class="no-data">No departments found.</p> {# Simple empty message #}
+                <p class="no-data default-no-data">No departments found.</p>
             {% endfor %}
+            <p class="no-data search-no-results" style="display: none;">No departments match your search.</p>
         </div>
     </section>
 
-    <!-- Company Management Section -->
-    <section class="management-section">
+    <section class="management-section" id="companies-section">
         <div class="section-header">
-             <div class="section-header-title">
+            <div class="section-header-left" style="display: flex; align-items: center; gap: 10px;">
                 <h2 class="section-title">
-                    {% if current_filter == 'companies' %}All Companies{% else %}Recent Companies{% endif %}
+                    {% if current_filter == 'companies' %}All Companies{% else %}Companies{% endif %}
                 </h2>
-                 {% if current_filter == 'companies' %}
+                {% if current_filter == 'companies' %}
                     <a href="{% url 'admin_dashboard' %}" class="btn btn-sm btn-link view-all-link">View Dashboard</a>
-                 {% endif %}
-             </div>
+                {% endif %}
+                <button class="section-toggle-btn" data-target="#companies-list" aria-expanded="true" title="Toggle Companies List">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
             <a href="{% url 'add_company' %}" class="btn btn-add"><i class="fas fa-plus"></i> Add Company</a>
         </div>
         <div class="item-list-container" id="companies-list">
             {% for company in companies %}
-                 <div class="list-item-card">
+                <div class="list-item-card"
+                     data-searchable-text="{{ company.name|lower }} {{ company.industry|default:''|lower }} {{ company.location|default:''|lower }}">
                     <div class="item-icon-wrapper">
                         <img src="{{ company.logo.url|default:'/static/images/default_avatar.png' }}" alt="{{ company.name }} Logo" class="item-icon">
                     </div>
@@ -305,39 +314,24 @@
                             <span class="item-subtitle"><i class="fas fa-map-marker-alt fa-fw"></i> {{ company.location|default:"N/A" }}</span>
                         </div>
                     </div>
-
-                     <div class="item-data item-data-projects">
+                    <div class="item-data item-data-projects">
                         <span class="status-badge status-very-high" title="Posted Internships by {{ company.name }}">
-                           <i class="fas fa-clipboard-list"></i> {{ company.internship.count|default:0 }} Intern{{ company.internships.count|pluralize:"ship,ships" }}
+                            <i class="fas fa-clipboard-list"></i> {{ company.projects.count|default:0 }} Intern{{ company.projects.count|pluralize:"ship,ships" }}
                         </span>
-                     </div>
-                     <div class="item-data item-data-projects">
-                        <span class="status-badge status-very-high" title="Posted Internships by {{ company.name }}">
-                           <i class="fas fa-clipboard-list"></i> {{ company.user.username }}
-                        </span>
-                     </div>
-
+                    </div>
                     <div class="item-actions">
-                        <div>
-                            <a href="{% url 'view_company' company.id %}" class="action-btn" title="View {{ company.name }} Details">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </div>
-                        <a href="{% url 'edit_company' company.id %}" class="action-btn edit-btn" title="Edit {{ company.name }}">
-                            <i class="fas fa-pencil-alt"></i>
-                        </a>
-                        <form action="{% url 'delete_company' company.id %}" method="post" class="delete-form" style="display: inline;"
-                              onsubmit="return confirm('Are you sure you want to delete the company {{ company.name }}?');">
+                        <a href="{% url 'view_company' company.id %}" class="action-btn view-btn" title="View {{ company.name }} Details"><i class="fas fa-eye"></i></a>
+                        <a href="{% url 'edit_company' company.id %}" class="action-btn edit-btn" title="Edit {{ company.name }}"><i class="fas fa-pencil-alt"></i></a>
+                        <form action="{% url 'delete_company' company.id %}" method="post" class="delete-form" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete the company {{ company.name }}?');">
                             {% csrf_token %}
-                            <button type="submit" class="action-btn delete-btn" title="Delete {{ company.name }}">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+                            <button type="submit" class="action-btn delete-btn" title="Delete {{ company.name }}"><i class="fas fa-trash-alt"></i></button>
                         </form>
                     </div>
                 </div>
             {% empty %}
-                 <p class="no-data">No companies found.</p> 
+                <p class="no-data default-no-data">No companies found.</p>
             {% endfor %}
+            <p class="no-data search-no-results" style="display: none;">No companies match your search.</p>
         </div>
     </section>
 
@@ -345,4 +339,6 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/admin_dashboard.js' %}"></script>
+
 {% endblock %}
